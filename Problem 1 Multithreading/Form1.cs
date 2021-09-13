@@ -17,34 +17,29 @@ namespace Problem_1_Multithreading
             InitializeComponent();
         }
 
+        private delegate void PrintMessageDelegate(string threadId);
+
+        private void PrintMessage(string threadId)
+        {
+            textBox1.AppendText("Hello from thread#: " + threadId);
+            textBox1.AppendText(Environment.NewLine);
+        }
         private void CreateThread()
-        {}
+        {
+            textBox1.Invoke(new PrintMessageDelegate(PrintMessage), Thread.CurrentThread.ManagedThreadId.ToString());
+        }
         private void button1_Click(object sender, EventArgs e)
         {
             Random rand = new Random();
             int NumberOfThreads = rand.Next(1, 6);
-            List<Thread> IOUs = new List<Thread>();
+            List<Thread> threads = new List<Thread>();
 
-            for(int i = 1; i <= NumberOfThreads; i++)
+            for (int i = 0; i < NumberOfThreads; i++)
             {
-                Thread IOU = new Thread(new ThreadStart(CreateThread));
-                IOUs.Add(IOU);
-                IOU.Start();
+                threads.Add(new Thread(new ThreadStart(CreateThread)));
+                threads[i].Start();
             }
 
-            while (IOUs.Any())
-            {
-                for(int i = 0; i < IOUs.Count; i++ )
-                {
-                    Thread IOU = IOUs.ElementAt(i);
-                    if (IOU.IsAlive == false)
-                    {
-                        textBox1.AppendText("Hello from thread no: " + IOU.GetHashCode());
-                        textBox1.AppendText(Environment.NewLine);
-                        IOUs.Remove(IOU);
-                    }
-                }
-            }
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
